@@ -3,22 +3,7 @@ type: docker
 name: default
 
 steps:
-  # =========================
-  # BUILD IMAGE (DRY RUN)
-  # =========================
-  - name: build_image
-    image: plugins/docker
-    settings:
-      registry: 192.168.8.51:5000
-      repo: 192.168.8.51:5000/rizurin/dev/rizubot-discord
-      tags:
-        - ${DRONE_COMMIT_SHA}
-      dry_run: true
-      insecure: true
-    when:
-      event:
-        - push
-        - pull_request
+
 
   # =========================
   # PUSH DEV (NON MASTER)
