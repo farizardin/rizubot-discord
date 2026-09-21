@@ -1,0 +1,102 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  # =========================
+  # BUILD IMAGE (DRY RUN)
+  # =========================
+  - name: build_image
+    image: plugins/docker
+    settings:
+      registry: 192.168.8.51:5000
+      repo: 192.168.8.51:5000/rizurin/dev/rizubot-discord
+      tags:
+        - ${DRONE_COMMIT_SHA}
+      dry_run: true
+      insecure: true
+    when:
+      event:
+        - push
+        - pull_request
+
+  # =========================
+  # PUSH DEV (NON MASTER)
+  # =========================
+  - name: push_dev_image
+    image: plugins/docker
+    settings:
+      registry: 192.168.8.51:5000
+      repo: 192.168.8.51:5000/rizurin/dev/rizubot-discord
+      tags:
+        - ${DRONE_COMMIT_SHA}
+      username:
+        from_secret: docker_user
+      password:
+        from_secret: docker_pass
+      insecure: true
+    when:
+      event:
+        - push
+        - pull_request
+      branch:
+        exclude:
+          - master
+
+  # =========================
+  # PUSH PROD (MASTER ONLY)
+  # =========================
+  - name: push_prod_image
+    image: plugins/docker
+    settings:
+      registry: 192.168.8.51:5000
+      repo: 192.168.8.51:5000/rizurin/prod/rizubot-discord
+      tags:
+        - ${DRONE_COMMIT_SHA}
+      username:
+        from_secret: docker_user
+      password:
+        from_secret: docker_pass
+      insecure: true
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  # =========================
+  # APPLY MANIFEST
+  # =========================
+  - name: apply_k8s
+    image: bitnami/kubectl:latest
+    environment:
+      KUBECONFIG_CONTENT:
+        from_secret: kubeconfig
+    commands:
+      - mkdir -p ~/.kube
+      - echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+      - kubectl apply -f k8s/
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  # =========================
+  # DEPLOY
+  # =========================
+  - name: deploy
+    image: bitnami/kubectl:latest
+    environment:
+      KUBECONFIG_CONTENT:
+        from_secret: kubeconfig
+    commands:
+      - mkdir -p ~/.kube
+      - echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+      - kubectl set image deployment/rizubot-discord rizubot-discord=192.168.8.51:5000/rizurin/prod/rizubot-discord:${DRONE_COMMIT_SHA} -n rizurin
+      - kubectl rollout status deployment/rizubot-discord -n rizurin
+    when:
+      event:
+        - push
+      branch:
+        - master

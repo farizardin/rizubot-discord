@@ -1,0 +1,19 @@
+[package]
+name = "rizubot-discord"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.103"
+dotenvy = "0.15.7"
+poise = "0.6.2"
+reqwest = { version = "0.12", features = ["json"] }
+serde = "1.0.229"
+serde_json = "1.0.151"
+serenity = "0.12.5"
+songbird = { version = "0.6", features = ["serenity", "builtin-queue"] }
+symphonia = { version = "0.5", features = ["all"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite"] }
+tokio = { version = "1.52.3", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

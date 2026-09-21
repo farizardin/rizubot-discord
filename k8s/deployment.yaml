@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rizubot-discord
+  namespace: rizurin
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: rizubot-discord
+  template:
+    metadata:
+      labels:
+        app: rizubot-discord
+    spec:
+      containers:
+        - name: rizubot-discord
+          image: 192.168.8.51:5000/rizurin/prod/rizubot-discord:placeholder
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              value: "sqlite:/app/data/dev.db"
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: rizubot-secret
+                  key: DISCORD_TOKEN
+            - name: CEREBRAS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rizubot-secret
+                  key: CEREBRAS_API_KEY
+            - name: ZAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rizubot-secret
+                  key: ZAI_API_KEY
+            - name: N8N_WEBHOOK_URL_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: rizubot-secret
+                  key: N8N_WEBHOOK_URL_DEV
+            - name: N8N_WEBHOOK_URL_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: rizubot-secret
+                  key: N8N_WEBHOOK_URL_PROD
+            - name: HERMES_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rizubot-secret
+                  key: HERMES_API_KEY
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/data
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: rizubot-pvc
+      imagePullSecrets:
+        - name: zot-secret

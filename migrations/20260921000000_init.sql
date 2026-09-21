@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    discord_id TEXT UNIQUE NOT NULL,
+    username TEXT NOT NULL,
+    xp INTEGER NOT NULL DEFAULT 0,
+    level INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS reaction_roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id TEXT NOT NULL,
+    channel_id TEXT NOT NULL,
+    role_id TEXT NOT NULL,
+    role_name TEXT,
+    emoji TEXT NOT NULL
+);
