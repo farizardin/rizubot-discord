@@ -1,5 +1,5 @@
 # Stage 1: Build the Rust binary
-FROM rust:slim AS builder
+FROM rust:slim-bookworm AS builder
 
 # Install build dependencies required by songbird and symphonia
 RUN apt-get update && \
