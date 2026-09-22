@@ -17,3 +17,10 @@ sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite"] }
 tokio = { version = "1.52.3", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[profile.release]
+codegen-units = 1 # Reduces memory usage by doing less parallel codegen
+opt-level = "s" # Optimize for size to reduce build time/memory (optional, but 'z' or 's' helps)
+debug = false # Disable debug symbols
+strip = true # Strip symbols from the binary
+lto = false # Disable link-time optimization (reduces memory during linking)

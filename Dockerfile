@@ -15,7 +15,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Build for release
-RUN cargo build --release
+RUN cargo build --release --jobs 1
 
 # Stage 2: Final runtime image
 FROM debian:bookworm-slim
