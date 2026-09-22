@@ -11,7 +11,7 @@ pub async fn dev(
 ) -> Result<(), Error> {
     ctx.defer().await?;
 
-    let n8n_webhook_url = std::env::var("N8N_WEBHOOK_URL_DEV").unwrap_or_default();
+    let n8n_webhook_url = std::env::var("N8N_WEBHOOK_URL_PROD").unwrap_or_default();
     if n8n_webhook_url.is_empty() {
         ctx.say("Error: N8N_WEBHOOK_URL_PROD is not set.").await?;
         return Ok(());
