@@ -9,6 +9,17 @@ pub async fn ask(
 ) -> Result<(), Error> {
     ctx.defer().await?;
 
+    let mut final_question = question;
+    if let poise::Context::Prefix(pctx) = ctx {
+        if let Some(ref_msg) = &pctx.msg.referenced_message {
+            let author = &ref_msg.author.name;
+            let content = &ref_msg.content;
+            if !content.is_empty() {
+                final_question = format!("(Konteks dari pesan yang dibalas, ditulis oleh {}: \"{}\")\n\n{}", author, content, final_question);
+            }
+        }
+    }
+
     let api_key = std::env::var("HERMES_API_KEY").unwrap_or_else(|_| "dummy_token".to_string());
 
     let system_prompt = r#"Kamu Rizubot, chatbot asisten cerdas buatan Rizu yang ramah, informatif, dan sopan.
@@ -24,6 +35,7 @@ ATURAN JAWABAN:
 - Jika membutuhkan informasi terkini, gunakan web_search atau web_extract.
 - Jika pengguna meminta hal yang memerlukan tools terlarang, jelaskan dengan sopan bahwa kamu hanya bisa membantu dengan informasi dan tanya jawab.
 - Gunakan bahasa Indonesia yang natural dan sopan.
+- MANFAATKAN FORMATTING DISCORD: Gunakan Markdown khusus Discord agar jawaban menarik dan mudah dibaca (contoh: **tebal** untuk poin penting, `code` atau ```code block``` untuk data teknis/kode, Markdown tabel untuk menyajikan data tabular, serta bullet point untuk daftar).
 
 KONTEKS KOMUNITAS:
 - Discord Server komunitas Rizu."#;
@@ -41,7 +53,7 @@ KONTEKS KOMUNITAS:
             },
             {
                 "role": "user",
-                "content": question
+                "content": final_question
             }
         ]
     });
