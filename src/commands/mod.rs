@@ -5,3 +5,4 @@ pub mod dev;
 pub mod join;
 pub mod reactionrole;
 pub mod play;
+pub mod waifu;

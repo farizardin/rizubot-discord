@@ -71,6 +71,7 @@ async fn main() -> anyhow::Result<()> {
                 commands::general::profile(),
                 commands::general::work(),
                 commands::ask::ask(),
+                commands::waifu::waifu(),
                 commands::channel::channel(),
                 commands::dev::dev(),
                 commands::join::join(),
